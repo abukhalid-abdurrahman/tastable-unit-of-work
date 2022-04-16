@@ -4,4 +4,13 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Entities\Entities.csproj" />
+      <ProjectReference Include="..\UnitOfWork.Interfaces\UnitOfWork.Interfaces.csproj" />
+    </ItemGroup>
+
 </Project>
