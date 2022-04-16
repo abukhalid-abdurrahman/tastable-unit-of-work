@@ -8,12 +8,12 @@ namespace UnitOfWork.Implementation.EF
 {
     public class EfUnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly PaymentContext _context;
         private readonly IDbConnection _connection;  
         private IDbTransaction _transaction;
 
         private bool _disposed = false;
-        public EfUnitOfWork(DbContext context)
+        public EfUnitOfWork(PaymentContext context)
         {
             _context = context;
             _connection = _context.Database.GetDbConnection();
