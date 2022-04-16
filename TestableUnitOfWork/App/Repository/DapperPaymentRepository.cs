@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using DapperExtensions;
+using Dapper;
 using Entities.Models;
 
 namespace App.Repository
@@ -18,33 +18,37 @@ namespace App.Repository
             _dbTransaction = dbTransaction;
         }
 
-        public void CreatePayment(Payment payment)
+        public int CreatePayment(Payment payment)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            _connection.Insert(payment, _dbTransaction);
+
+            const string query = "INSERT INTO public.\"Payments\"(\"PaymentStatus\", \"PaymentType\", \"CustomerCard\", \"Amount\", \"DateCreated\", \"DateUpdated\") VALUES (@PaymentStatus, @PaymentType, @CustomerCard, @Amount, @DateCreated, @DateUpdated) RETURNING \"Id\";";
+            return _connection.QueryFirstOrDefault<int>(query, payment);
         }
 
         public void UpdatePayment(Payment payment)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            _connection.Update(payment, _dbTransaction);
+            const string query = "UPDATE \"Payments\" SET \"PaymentStatus\"=@PaymentStatus, \"DateUpdated\"=@DateUpdated WHERE \"Id\" = @Id;";
+            _connection.ExecuteScalar(query, payment);
         }
 
         public Payment GetPayment(int id)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            return _connection.Get<Payment>(id, _dbTransaction);
+            const string query = "SELECT * FROM \"Payments\" WHERE \"Id\" = @Id;";
+            return _connection.QueryFirstOrDefault<Payment>(query, new { Id = id });
         }
 
         private void ReleaseUnmanagedResources()
         {
             if (_disposed) return;
             
-            _dbTransaction.Dispose();
-            _connection.Dispose();
+            _dbTransaction?.Dispose();
+            _connection?.Dispose();
 
             _disposed = true;
         }

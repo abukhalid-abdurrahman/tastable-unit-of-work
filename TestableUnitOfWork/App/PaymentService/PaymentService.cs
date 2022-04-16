@@ -40,13 +40,15 @@ namespace App.PaymentService
                     PaymentType = PaymentType.Debit
                 };
                 
-                _paymentRepository.CreatePayment(debitPayment);
+                debitPayment.Id = _paymentRepository.CreatePayment(debitPayment);
                 
                 // TODO send request to payment gateway, to perform debit operation...
                 // Updating payment status and update date
                 debitPayment.DateUpdated = DateTimeOffset.Now;
                 debitPayment.PaymentStatus = PaymentStatus.Approved;
+                _paymentRepository.UpdatePayment(debitPayment);
 
+                
                 _unitOfWork.Commit();
             }
             catch (Exception e)
@@ -85,6 +87,8 @@ namespace App.PaymentService
                 // Updating payment status and update date
                 creditPayment.DateUpdated = DateTimeOffset.Now;
                 creditPayment.PaymentStatus = PaymentStatus.Approved;
+                _paymentRepository.UpdatePayment(creditPayment);
+
                 
                 _unitOfWork.Commit();
             }

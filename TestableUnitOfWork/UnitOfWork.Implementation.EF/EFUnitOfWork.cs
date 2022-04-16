@@ -55,7 +55,7 @@ namespace UnitOfWork.Implementation.EF
             {
                 Connection?.Dispose();
                 Transaction?.Dispose();
-                _context.Dispose();
+                _context?.Dispose();
             }
             ReleaseUnmanagedResources();
 

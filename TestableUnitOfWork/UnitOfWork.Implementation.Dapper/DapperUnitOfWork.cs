@@ -22,6 +22,8 @@ namespace UnitOfWork.Implementation.Dapper
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
+            if(_connection.State != ConnectionState.Open)
+                _connection.Open();
             _transaction = _connection.BeginTransaction();
         }
 
@@ -29,6 +31,8 @@ namespace UnitOfWork.Implementation.Dapper
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
+            if(_connection.State != ConnectionState.Open)
+                _connection.Open();
             _transaction.Commit();
         }
 
@@ -36,6 +40,8 @@ namespace UnitOfWork.Implementation.Dapper
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
+            if(_connection.State != ConnectionState.Open)
+                _connection.Open();
             _transaction.Rollback();
         }
 

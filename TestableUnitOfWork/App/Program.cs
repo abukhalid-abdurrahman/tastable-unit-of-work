@@ -1,3 +1,4 @@
+using System;
 using App.PaymentService;
 using App.Repository;
 using Npgsql;
@@ -11,31 +12,47 @@ namespace App
     {
         public static void Main()
         {
-            InvokeEfUnitOfWorkExample();
+            InvokeDapperUnitOfWorkExample();
         }
 
         private static void InvokeEfUnitOfWorkExample()
         {
+            Console.WriteLine("Creating payment context (db context)...");
             using PaymentContext paymentContext = new PaymentContext();
             using IUnitOfWork unitOfWork = new EfUnitOfWork(paymentContext);
             using IPaymentRepository paymentRepository = new EfPaymentRepository(paymentContext, unitOfWork.Transaction);
+            Console.WriteLine("Db created successfully, creating service instance...");
             using IPaymentService paymentService = new PaymentService.PaymentService(paymentRepository, unitOfWork);
             
+            Console.WriteLine("Performing credit payment...");
             paymentService.CreditPayment(1000, "4444 0000 9999 1111");
-            paymentService.DebitPayment(1500, "4444 0000 9999 1111");
+            Console.WriteLine("Performing credit payment completed successfully...");
         }
         
         private static void InvokeDapperUnitOfWorkExample()
         {
+            var connectionBuilder = new NpgsqlConnectionStringBuilder
+            {
+                Database = "payments",
+                Host = "localhost",
+                Username = "postgres",
+                Password = "faridun",
+                Timezone = "Asia/Dushanbe"
+            };
+            
+            Console.WriteLine("Creating payment context (db context)...");
             using IUnitOfWork unitOfWork = new DapperUnitOfWork(new NpgsqlConnection()
             {
-                ConnectionString = "Host=localhost;Port=5433;Database=payments;Username=postgres;Password=faridun"
+                ConnectionString = connectionBuilder.ConnectionString
             });
             using IPaymentRepository paymentRepository = new DapperPaymentRepository(unitOfWork.Connection, unitOfWork.Transaction);
+            Console.WriteLine("Db created successfully, creating service instance...");
             using IPaymentService paymentService = new PaymentService.PaymentService(paymentRepository, unitOfWork);
             
-            paymentService.CreditPayment(1000, "4444 0000 9999 1111");
+            Console.WriteLine("Performing debit payment...");
             paymentService.DebitPayment(1500, "4444 0000 9999 1111");
+            Console.WriteLine("Performing debit payment completed successfully...");
+
         }
     }
 }

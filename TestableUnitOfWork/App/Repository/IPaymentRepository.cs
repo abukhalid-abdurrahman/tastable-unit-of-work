@@ -5,7 +5,7 @@ namespace App.Repository
 {
     public interface IPaymentRepository : IDisposable
     {
-        void CreatePayment(Payment payment);
+        int CreatePayment(Payment payment);
         void UpdatePayment(Payment payment);
         Payment GetPayment(int id);
     }

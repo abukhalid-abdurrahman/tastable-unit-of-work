@@ -21,21 +21,20 @@ namespace App.Repository
             _dbTransaction = dbTransaction;
         }
         
-        public void CreatePayment(Payment payment)
+        public int CreatePayment(Payment payment)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            _paymentContext.Database.UseTransaction(_dbTransaction as DbTransaction);
             _paymentContext.Payments.Add(payment);
             _paymentContext.SaveChanges();
+            return payment.Id;
         }
 
         public void UpdatePayment(Payment payment)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            _paymentContext.Database.UseTransaction(_dbTransaction as DbTransaction);
-            _paymentContext.Payments.Remove(payment);
+            _paymentContext.Payments.Update(payment);
             _paymentContext.SaveChanges();
         }
 
@@ -43,7 +42,6 @@ namespace App.Repository
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
-            _paymentContext.Database.UseTransaction(_dbTransaction as DbTransaction);
             return _paymentContext.Payments.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
@@ -51,8 +49,8 @@ namespace App.Repository
         {
             if(_disposed) return;
             
-            _dbTransaction.Dispose();
-            _paymentContext.Dispose();
+            _dbTransaction?.Dispose();
+            _paymentContext?.Dispose();
 
             _disposed = true;
         }

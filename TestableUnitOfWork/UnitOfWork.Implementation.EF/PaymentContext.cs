@@ -1,5 +1,6 @@
 ﻿using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace UnitOfWork.Implementation.EF
 {
@@ -7,14 +8,25 @@ namespace UnitOfWork.Implementation.EF
     {
         public DbSet<Payment> Payments { get; set; }
         
-        public PaymentContext()
+        public string ConnectionString
         {
-            Database.EnsureCreated();
+            get
+            {
+                var connectionBuilder = new NpgsqlConnectionStringBuilder
+                {
+                    Database = "payments",
+                    Host = "localhost",
+                    Username = "postgres",
+                    Password = "faridun",
+                    Timezone = "Asia/Dushanbe"
+                };
+                return connectionBuilder.ConnectionString;
+            }
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=payments;Username=postgres;Password=faridun");
+            optionsBuilder.UseNpgsql(ConnectionString);
         }
     }
 }
