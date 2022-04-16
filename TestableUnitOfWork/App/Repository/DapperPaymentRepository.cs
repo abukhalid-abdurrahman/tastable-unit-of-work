@@ -24,7 +24,7 @@ namespace App.Repository
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
 
             const string query = "INSERT INTO public.\"Payments\"(\"PaymentStatus\", \"PaymentType\", \"CustomerCard\", \"Amount\", \"DateCreated\", \"DateUpdated\") VALUES (@PaymentStatus, @PaymentType, @CustomerCard, @Amount, @DateCreated, @DateUpdated) RETURNING \"Id\";";
-            return _connection.QueryFirstOrDefault<int>(query, payment);
+            return _connection.QueryFirstOrDefault<int>(query, payment, _dbTransaction);
         }
 
         public void UpdatePayment(Payment payment)
@@ -32,7 +32,7 @@ namespace App.Repository
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
             const string query = "UPDATE \"Payments\" SET \"PaymentStatus\"=@PaymentStatus, \"DateUpdated\"=@DateUpdated WHERE \"Id\" = @Id;";
-            _connection.ExecuteScalar(query, payment);
+            _connection.ExecuteScalar(query, payment, _dbTransaction);
         }
 
         public Payment GetPayment(int id)
@@ -40,7 +40,7 @@ namespace App.Repository
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperPaymentRepository));
             const string query = "SELECT * FROM \"Payments\" WHERE \"Id\" = @Id;";
-            return _connection.QueryFirstOrDefault<Payment>(query, new { Id = id });
+            return _connection.QueryFirstOrDefault<Payment>(query, new { Id = id }, _dbTransaction);
         }
 
         private void ReleaseUnmanagedResources()
