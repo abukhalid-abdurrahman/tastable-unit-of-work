@@ -44,7 +44,7 @@ namespace Repositories.Implementation.EF
             return _paymentContext.Payments.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        private void ReleaseUnmanagedResources()
+        public void Dispose()
         {
             if(_disposed) return;
             
@@ -52,17 +52,6 @@ namespace Repositories.Implementation.EF
             _paymentContext?.Dispose();
 
             _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
-        }
-
-        ~EfPaymentRepository()
-        {
-            ReleaseUnmanagedResources();
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Services.PaymentService
             if (_disposed)
                 throw new ObjectDisposedException(nameof(PaymentService));
 
+            // Validating debit amount and customer card (pan)
             if (amount <= 0 || string.IsNullOrEmpty(customerCard))
                 throw new ArgumentException();
             
@@ -65,6 +66,7 @@ namespace Services.PaymentService
             if (_disposed)
                 throw new ObjectDisposedException(nameof(PaymentService));
             
+            // Validating credit amount and customer card (pan)
             if (amount <= 0 || string.IsNullOrEmpty(customerCard))
                 throw new ArgumentException();
             

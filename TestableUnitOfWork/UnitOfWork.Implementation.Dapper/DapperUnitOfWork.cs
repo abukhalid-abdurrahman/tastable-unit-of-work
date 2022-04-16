@@ -6,73 +6,54 @@ namespace UnitOfWork.Implementation.Dapper
 {
     public class DapperUnitOfWork : IUnitOfWork
     {
-        private readonly IDbConnection _connection;  
-        private IDbTransaction _transaction;
+        private readonly IDbConnection _dbConnection;  
+        private IDbTransaction _dbTransaction;
 
         private bool _disposed = false;
-        public DapperUnitOfWork(IDbConnection connection)
+        
+        public DapperUnitOfWork(IDbConnection dbConnection)
         {
-            _connection = connection;
+            _dbConnection = dbConnection;
         }
 
-        public IDbConnection Connection => _connection;
-        public IDbTransaction Transaction => _transaction;
+        public IDbConnection Connection => _dbConnection;
+        public IDbTransaction Transaction => _dbTransaction;
         
         public void Begin()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
-            if(_connection.State != ConnectionState.Open)
-                _connection.Open();
-            _transaction = _connection.BeginTransaction();
+            if(_dbConnection.State != ConnectionState.Open)
+                _dbConnection.Open();
+            _dbTransaction = _dbConnection.BeginTransaction();
         }
 
         public void Commit()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
-            if(_connection.State != ConnectionState.Open)
-                _connection.Open();
-            _transaction.Commit();
+            if(_dbConnection.State != ConnectionState.Open)
+                _dbConnection.Open();
+            _dbTransaction.Commit();
         }
 
         public void Rollback()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(DapperUnitOfWork));
-            if(_connection.State != ConnectionState.Open)
-                _connection.Open();
-            _transaction.Rollback();
+            if(_dbConnection.State != ConnectionState.Open)
+                _dbConnection.Open();
+            _dbTransaction.Rollback();
         }
-
-        private void ReleaseUnmanagedResources()
-        {
-            // TODO release unmanaged resources here
-        }
-
-        private void Dispose(bool disposing)
+        
+        public void Dispose()
         {
             if(_disposed) return;
             
-            if (disposing)
-            {
-                Connection?.Dispose();
-                Transaction?.Dispose();
-            }
-            ReleaseUnmanagedResources();
+            _dbTransaction?.Dispose();
+            _dbConnection?.Dispose();
 
             _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~DapperUnitOfWork()
-        {
-            Dispose(false);
         }
     }
 }

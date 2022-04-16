@@ -8,69 +8,52 @@ namespace UnitOfWork.Implementation.EF
 {
     public class EfUnitOfWork : IUnitOfWork
     {
-        private readonly PaymentContext _context;
-        private readonly IDbConnection _connection;  
-        private IDbTransaction _transaction;
+        private readonly PaymentContext _paymentDbContext;
+        private readonly IDbConnection _dbConnection;  
+        private IDbTransaction _dbTransaction;
 
         private bool _disposed = false;
-        public EfUnitOfWork(PaymentContext context)
+        
+        public EfUnitOfWork(PaymentContext paymentDbContext)
         {
-            _context = context;
-            _connection = _context.Database.GetDbConnection();
+            _paymentDbContext = paymentDbContext;
+            _dbConnection = _paymentDbContext.Database.GetDbConnection();
         }
 
-        public IDbConnection Connection => _connection;
-        public IDbTransaction Transaction => _transaction;
+        public IDbConnection Connection => _dbConnection;
+        public IDbTransaction Transaction => _dbTransaction;
         
         public void Begin()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(EfUnitOfWork));
-            _transaction = _context.Database.BeginTransaction().GetDbTransaction();
+            _dbTransaction = _paymentDbContext.Database.BeginTransaction().GetDbTransaction();
         }
 
         public void Commit()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(EfUnitOfWork));
-            _transaction.Commit();
+            _dbTransaction.Commit();
         }
 
         public void Rollback()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(EfUnitOfWork));
-            _transaction.Rollback();
+            _dbTransaction.Rollback();
             
-        }
-        
-        private void ReleaseUnmanagedResources()
-        {
-            // TODO release unmanaged resources here
-        }
-        
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Connection?.Dispose();
-                Transaction?.Dispose();
-                _context?.Dispose();
-            }
-            ReleaseUnmanagedResources();
-
-            _disposed = true;
         }
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            if(_disposed) return;
 
-        ~EfUnitOfWork()
-        {
-            Dispose(false);
+            _dbConnection?.Dispose();
+            _dbTransaction?.Dispose();
+            _paymentDbContext?.Dispose();
+            
+            _disposed = true;
         }
     }
 }
