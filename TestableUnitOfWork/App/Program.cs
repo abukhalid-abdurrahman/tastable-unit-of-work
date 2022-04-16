@@ -1,6 +1,7 @@
 using System;
 using App.PaymentService;
 using App.Repository;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using UnitOfWork.Implementation.Dapper;
 using UnitOfWork.Implementation.EF;
@@ -10,15 +11,20 @@ namespace App
 {
     internal static class Program
     {
+        private static readonly IConfigurationRoot Configuration = 
+            new ConfigurationBuilder()
+                .AddIniFile("config.ini")
+                .Build();
+        
         public static void Main()
         {
-            InvokeDapperUnitOfWorkExample();
+            InvokeEfUnitOfWorkExample();
         }
 
         private static void InvokeEfUnitOfWorkExample()
         {
             Console.WriteLine("Creating payment context (db context)...");
-            using PaymentContext paymentContext = new PaymentContext();
+            using PaymentContext paymentContext = new PaymentContext(Configuration["connectionString"]);
             using IUnitOfWork unitOfWork = new EfUnitOfWork(paymentContext);
             using IPaymentRepository paymentRepository = new EfPaymentRepository(paymentContext, unitOfWork.Transaction);
             Console.WriteLine("Db created successfully, creating service instance...");
@@ -31,19 +37,10 @@ namespace App
         
         private static void InvokeDapperUnitOfWorkExample()
         {
-            var connectionBuilder = new NpgsqlConnectionStringBuilder
-            {
-                Database = "payments",
-                Host = "localhost",
-                Username = "postgres",
-                Password = "faridun",
-                Timezone = "Asia/Dushanbe"
-            };
-            
             Console.WriteLine("Creating payment context (db context)...");
             using IUnitOfWork unitOfWork = new DapperUnitOfWork(new NpgsqlConnection()
             {
-                ConnectionString = connectionBuilder.ConnectionString
+                ConnectionString = Configuration["connectionString"]
             });
             using IPaymentRepository paymentRepository = new DapperPaymentRepository(unitOfWork.Connection, unitOfWork.Transaction);
             Console.WriteLine("Db created successfully, creating service instance...");

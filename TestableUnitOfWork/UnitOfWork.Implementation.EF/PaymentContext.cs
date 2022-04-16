@@ -1,32 +1,21 @@
 ﻿using Entities.Models;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace UnitOfWork.Implementation.EF
 {
     public sealed class PaymentContext : DbContext
     {
+        private readonly string _connectionString;
         public DbSet<Payment> Payments { get; set; }
-        
-        public string ConnectionString
+
+        public PaymentContext(string connectionString)
         {
-            get
-            {
-                var connectionBuilder = new NpgsqlConnectionStringBuilder
-                {
-                    Database = "payments",
-                    Host = "localhost",
-                    Username = "postgres",
-                    Password = "faridun",
-                    Timezone = "Asia/Dushanbe"
-                };
-                return connectionBuilder.ConnectionString;
-            }
+            _connectionString = connectionString;
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(ConnectionString);
+            optionsBuilder.UseNpgsql(_connectionString);
         }
     }
 }
