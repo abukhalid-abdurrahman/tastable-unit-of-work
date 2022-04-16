@@ -46,6 +46,8 @@ namespace UnitOfWork.Implementation.Dapper
 
         private void Dispose(bool disposing)
         {
+            if(_disposed) return;
+            
             if (disposing)
             {
                 Connection?.Dispose();

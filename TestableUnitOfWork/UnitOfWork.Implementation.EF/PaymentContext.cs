@@ -5,7 +5,7 @@ namespace UnitOfWork.Implementation.EF
 {
     public sealed class PaymentContext : DbContext
     {
-        public DbSet<Payment> Users { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         
         public PaymentContext()
         {
