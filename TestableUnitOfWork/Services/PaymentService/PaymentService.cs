@@ -1,10 +1,10 @@
 ﻿using System;
-using App.Repository;
 using Entities.Enums;
 using Entities.Models;
+using Repositories;
 using UnitOfWork.Interfaces;
 
-namespace App.PaymentService
+namespace Services.PaymentService
 {
     public class PaymentService : IPaymentService
     {

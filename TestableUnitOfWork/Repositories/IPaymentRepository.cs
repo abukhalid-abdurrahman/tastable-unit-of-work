@@ -1,7 +1,7 @@
 ﻿using System;
 using Entities.Models;
 
-namespace App.Repository
+namespace Repositories
 {
     public interface IPaymentRepository : IDisposable
     {

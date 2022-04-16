@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using UnitOfWork.Implementation.EF;
 
-namespace App.Repository
+namespace Repositories.Implementation.EF
 {
     public class EfPaymentRepository : IPaymentRepository
     {
@@ -24,7 +23,7 @@ namespace App.Repository
         public int CreatePayment(Payment payment)
         {
             if (_disposed)
-                throw new ObjectDisposedException(nameof(DapperPaymentRepository));
+                throw new ObjectDisposedException(nameof(EfPaymentRepository));
             _paymentContext.Payments.Add(payment);
             _paymentContext.SaveChanges();
             return payment.Id;
@@ -33,7 +32,7 @@ namespace App.Repository
         public void UpdatePayment(Payment payment)
         {
             if (_disposed)
-                throw new ObjectDisposedException(nameof(DapperPaymentRepository));
+                throw new ObjectDisposedException(nameof(EfPaymentRepository));
             _paymentContext.Payments.Update(payment);
             _paymentContext.SaveChanges();
         }
@@ -41,7 +40,7 @@ namespace App.Repository
         public Payment GetPayment(int id)
         {
             if (_disposed)
-                throw new ObjectDisposedException(nameof(DapperPaymentRepository));
+                throw new ObjectDisposedException(nameof(EfPaymentRepository));
             return _paymentContext.Payments.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 

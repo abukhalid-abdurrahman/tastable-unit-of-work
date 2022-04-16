@@ -1,8 +1,10 @@
 using System;
-using App.PaymentService;
-using App.Repository;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Repositories;
+using Repositories.Implementation.Dapper;
+using Repositories.Implementation.EF;
+using Services.PaymentService;
 using UnitOfWork.Implementation.Dapper;
 using UnitOfWork.Implementation.EF;
 using UnitOfWork.Interfaces;
@@ -28,7 +30,7 @@ namespace App
             using IUnitOfWork unitOfWork = new EfUnitOfWork(paymentContext);
             using IPaymentRepository paymentRepository = new EfPaymentRepository(paymentContext, unitOfWork.Transaction);
             Console.WriteLine("Db created successfully, creating service instance...");
-            using IPaymentService paymentService = new PaymentService.PaymentService(paymentRepository, unitOfWork);
+            using IPaymentService paymentService = new PaymentService(paymentRepository, unitOfWork);
             
             Console.WriteLine("Performing credit payment...");
             paymentService.CreditPayment(1000, "4444 0000 9999 1111");
@@ -44,7 +46,7 @@ namespace App
             });
             using IPaymentRepository paymentRepository = new DapperPaymentRepository(unitOfWork.Connection, unitOfWork.Transaction);
             Console.WriteLine("Db created successfully, creating service instance...");
-            using IPaymentService paymentService = new PaymentService.PaymentService(paymentRepository, unitOfWork);
+            using IPaymentService paymentService = new PaymentService(paymentRepository, unitOfWork);
             
             Console.WriteLine("Performing debit payment...");
             paymentService.DebitPayment(1500, "4444 0000 9999 1111");

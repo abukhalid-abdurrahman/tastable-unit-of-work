@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace App.PaymentService
+namespace Services.PaymentService
 {
     public interface IPaymentService : IDisposable
     {
